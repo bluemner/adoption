@@ -12,7 +12,7 @@ var https = require('https');
 var io = require('socket.io')(http);
 var fs = require('fs');
 var handlebars = require('handlebars');
-var bodyParser  = require('body-parser');
+var bodyParser = require('body-parser');
 // =================================================
 
 var HTTPS_PORT = Number(4443);
@@ -26,6 +26,7 @@ app.use(bodyParser.urlencoded({
   extended: true
 }));
 
+
 // -------------------------------------------------
 // OPTION FOR SSL 
 // -------------------------------------------------
@@ -34,21 +35,26 @@ var options = {
  // key: fs.readFileSync(''),
   //cert: fs.readFileSync('')
 };
+var elementDataCount = 1;
 var elementData= 
    [
      {
+        node_id: 0,
         node_element_id : 0,
         node_element_name : "some",
         node_element_value : 1,
       },{
+        node_id: 0,
         node_element_id : 1,
         node_element_name : "two",
         node_element_value : 0.456,
       },
+      
    ];
+var dataCount = 2;
 var data = { 
   nodes:[
-    {
+     {
       node_id : 0,
       title : "Node 0",
       node_elements: elementData
@@ -57,6 +63,11 @@ var data = {
       node_id : 1,
       title : "Node 1",
       node_elements: elementData
+    },
+     {
+      node_id : 2,
+      title : "Node 2",
+      node_elements: []
     }
   ]    
 };
@@ -94,7 +105,7 @@ var onlineToJSON = function ( websitename, code, message )
 }
 
 // -------------------------------------------------
-//  websites : 
+//  WEBSITE : 
 // -------------------------------------------------
 var websitesToJSON = function ( websites ) 
 {
@@ -110,7 +121,7 @@ var websitesToJSON = function ( websites )
 }
 
 // -------------------------------------------------
-//    APPEND HTML TO FILE NAMES
+// APPEND HTML TO FILE NAMES
 // -------------------------------------------------
 app.use(function ( req, res, next ) 
 {
@@ -151,6 +162,7 @@ app.get('/Status', function (request, responce) {
 app.get('/online', function (request, responce) {
   responce.send(onlineToJSON(SERVER_NAME, SERVER_CODE,SERVER_MESSAGE));
 });
+
 // -------------------------------------------------
 //  
 // -------------------------------------------------
@@ -160,7 +172,7 @@ app.get('/data', function (request, responce) {
 
 app.get('/nodes', function(request, response){
   fs.readFile( __dirname + '/views/node.hbs', 'utf-8', function(error, source){
-    if(error === 'undefined'){
+    if( error === undefined ){
       console.log("nodes:\n" +"\terror getting source\n\t"+ __dirname + '/views/_node.html');
       return;
     }
@@ -172,17 +184,22 @@ app.get('/nodes', function(request, response){
 });
 });
 
+// -------------------------------------------------
+//  
+// -------------------------------------------------
 app.post('/addNode', function(request, response){
   
   console.log('Add node');
   data.nodes.push({        
-      node_id : data.nodes.length,
-      title : "Node " + data.nodes.length ,
+      node_id :  ++dataCount,
+      title : "Node " + ( ++dataCount ) ,
       node_elements: [{
+        node_id: 0 ,
         node_element_id : 0,
         node_element_name : "foo",
         node_element_value : 3,
       },{
+        node_id: 0 ,
         node_element_id : 1,
         node_element_name : "bar",
         node_element_value : 7,
@@ -191,14 +208,154 @@ app.post('/addNode', function(request, response){
   );  
   response.send("ok");
 });
-app.post('/addNodeElement', function(request, response){
-  
-   //console.log(request.params);
-   console.log(request.body);
-  // console.log(request.query);
 
-  response.send("ok");
+// -------------------------------------------------
+//  Add Node Elements 
+// -------------------------------------------------
+app.post('/addNodeElement', function(request, response){
+      //console.log(request.params);
+   var nodeElement = request.body;
+   
+   //console.log( nodeElement );
+   for( var i  = 0; i < data.nodes.length; ++i  )
+   {
+     var node = data.nodes[i];
+     if( node.node_id == nodeElement.node_id)
+     {            
+         
+          node.node_elements.push({
+              node_id: nodeElement.node_id ,           
+              node_element_id :  ++elementDataCount,
+              node_element_name : nodeElement.node_element_name,
+              node_element_value : nodeElement.node_element_value
+          });
+          
+          response.send({
+            "code":"0",
+            "message": "success"
+            });
+            
+          return;
+     }
+   }
+   
+   response.send({
+    "code":"-1",
+    "message":"failure"
+    });
+        
 });
+
+// -------------------------------------------------
+//  Add Node Elements 
+// -------------------------------------------------
+app.post('/removeNodeElement', function(request, response){
+   
+   var nodeElement = request.body;
+   
+    for( var i  = 0; i < data.nodes.length; ++i  )
+   {
+     var node = data.nodes[i];
+     if( node.node_id == nodeElement.node_id)
+     {            
+         
+          var elements = node.node_elements;
+          
+            //  node_id: nodeElement.node_id ,           
+            //  node_element_id :  ++elementDataCount,
+           //   node_element_name : nodeElement.node_element_name,
+             // node_element_value : nodeElement.node_element_value
+         
+           for( var i  = 0; i < elements.length; ++i  )
+            {
+              
+              
+              if( elements[i].node_element_id == nodeElement.node_element_id)
+              {            
+                    console.log('Removed:'+elements[i].node_element_id );
+                    elements.splice(i, 1);
+                    response.send({
+                      "code":"0",
+                      "message": "success"
+                      });
+                      
+                    return;
+              }
+            }
+          response.send({
+            "code":"0",
+            "message": "success"
+            });
+            
+          return;
+     }
+   }
+   
+   
+  
+   
+   response.send({
+    "code":"-1",
+    "message":"failure"
+    });
+        
+});
+// -------------------------------------------------
+//  Add Node Elements 
+// -------------------------------------------------
+app.post('/saveNodeElement', function(request, response){
+
+   var nodeElement = request.body;
+   
+   
+    for( var i  = 0; i < data.nodes.length; ++i  )
+    {
+        var node = data.nodes[i];
+        if( node.node_id == nodeElement.node_id)
+        {            
+            
+            var elements = node.node_elements;
+                    
+              for( var i  = 0; i < elements.length; ++i  )
+              {                                
+                if( elements[i].node_element_id == nodeElement.node_element_id)
+                {            
+                      console.log('Saved:'+elements[i].node_element_id );
+                      elements[i].node_element_name = nodeElement.node_element_name;
+                      elements[i].node_element_value = nodeElement.node_element_value;
+                      response.send({
+                        "code":"0",
+                        "message": "success"
+                        });
+                        
+                      return;
+                }
+              }
+            response.send({
+              "code":"0",
+              "message": "success"
+              });
+              
+            return;
+        }
+    }
+      
+   response.send({
+    "code":"-1",
+    "message":"failure"
+    });
+        
+});
+// -------------------------------------------------
+//  Save All Nodes
+// -------------------------------------------------
+app.post('/saveAllNodes', function(request, response){
+   console.log(request.params);   
+   console.log( request.body );
+   
+   response.send(request.body);     
+});
+
 // -------------------------------------------------
 //  Set The index file location
 // -------------------------------------------------

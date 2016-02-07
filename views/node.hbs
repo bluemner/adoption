@@ -1,50 +1,55 @@
+<form action="/saveAllNodes" method="POST">
 {{#nodes}}
 	<div class="panel panel-default panel-inverse node">
 		<div class="panel-heading">
-			<button type="button" class="btn glyphicon glyphicon glyphicon-minus btn-primary collapse-button" data-toggle="collapse" data-target="#node-{{node_id}}"></button>
+			<button type="button" class="btn-xs glyphicon glyphicon glyphicon-minus btn-primary collapse-button" data-toggle="collapse" data-target="#node-{{node_id}}"></button>
 			{{title}}
 		</div>
 		<div id="node-{{node_id}}" class="panel-body collapse in">
 			<!--   -->
 			{{#node_elements}}
+						
 			<div class="col-sm-12 row node-row top-buffer" >
-				<div class="col-sm-11">
-					<div class="col-sm-6">
-						<label for="name-{{node_element_id}}" class="col-sm-2">Name:</label>
-						<input id="name-{{node_element_id}}" type="text-box" class="col-sm-10" value="{{node_element_name}}"></input>
+				<div class="col-sm-10">					
+					<div class="col-sm-8 col-md-6"">
+						<label for="name-{{node_element_id}}" class="col-sm-3 col-md-4 col-lg-2">Name:</label>
+						<input id="name-{{node_element_id}}" type="text-box" class="col-sm-9 col-md-8 col-lg-10" value="{{node_element_name}}"></input>
 					</div>
-					<div class="col-sm-6">
-						<label for="value-{{node_element_id}}" class="col-sm-2">Value:</label>
-						<input id="value-{{node_element_id}}" type="text-box" class="col-sm-10" value="{{node_element_value}}"></input>
+					<div class="col-sm-8 col-md-6">
+						<label for="value-{{node_element_id}}" class="col-sm-3 col-md-3 col-lg-2">Value:</label>
+						<input id="value-{{node_element_id}}" type="number" class="col-sm-9 col-md-7 col-lg-10" value="{{node_element_value}}"></input>
 					</div>
 					
-				</div>		
-				<div class="col-sm-1">
-					<button id="remove-element-{{node_element_id}}" type="button" class="btn btn-sm btn-danger glyphicon glyphicon-remove-sign"> Remove</button>
+				</div>
+				<div class="col-sm-2">						
+						<button id="save-element-{{node_id}}-{{node_element_id}}" type="button" class="btn btn-sm btn-primary glyphicon glyphicon-floppy-disk save-node-element"> Save</button>					
+						<button id="remove-element-{{node_id}}-{{node_element_id}}" type="button" class="btn btn-sm btn-danger glyphicon glyphicon-remove-sign remove-node-element"> Remove</button>		
 				</div>
 			</div>
+		
 			{{/node_elements}}
 			<!--   -->
 			<div class="col-sm-12 row add-node top-buffer top-buffer">
-				<div class="col-sm-11">
+				<div class="col-sm-10">
 					<div class="col-sm-6">
 						<label for="" class="col-sm-2">Name:</label>
 						<input id="add-node-element-name-{{node_id}}" type="text-box" class="col-sm-10"></input>
 					</div>
 					<div class="col-sm-6">
 						<label for="" class="col-sm-2">Value:</label>
-						<input id="add-node-element-value-{{node_id}}" type="text-box" class="col-sm-10"></input>
+						<input id="add-node-element-value-{{node_id}}" type="number" class="col-sm-10"></input>
 					</div>
 					
 				</div>		
-				<div class="col-sm-1">
-					<button id="add-element-{{node_id}}" type="button" class="btn btn-sm btn-success glyphicon glyphicon-plus-sign add-node-element"> Add</button>
+				<div class="col-sm-2">
+					<button id="add-element-{{node_id}}" type="button" class="btn btn-sm btn-success glyphicon glyphicon-plus-sign add-node-element col-sm-12"> Add</button>
 				</div>
 			</div>
 					
 		</div>
 	</div>
 {{/nodes}}
+
 <div>
 	
 	<div class="col-sm-1">
@@ -59,3 +64,4 @@
 		<button id="cancle"  type="button" class="btn btn-sm btn-warning glyphicon glyphicon-remove-sign"> Cancel</button>
 	</div>
 </div>
+</form>

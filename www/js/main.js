@@ -29,6 +29,22 @@
 				main.addNodeElement( node_id ) ;
 			});
 			
+			$content.on('click', '.save-node-element', function()
+			{
+				var temp = $(this).attr('id');					
+				var	node_id = temp.split('-')[2];
+				var	node_element_id = temp.split('-')[3];
+				main.saveNodeElement( node_id,node_element_id ) ;
+			});
+			
+			$content.on('click', '.remove-node-element', function()
+			{
+				var temp = $(this).attr('id');					
+				var	node_id = temp.split('-')[2];
+				var	node_element_id = temp.split('-')[3];
+				main.removeNodeElement( node_id, node_element_id) ;
+			});
+			
 			$content.on('click', '#cancle', function()
 			{
 				$("#content").load("/nodes");
@@ -54,6 +70,8 @@
 				$content.removeClass('col-md-10 col-md-offset-2');
 				$content.addClass('col-md-11 col-md-offset-0');
 			});
+		
+			
 		},
 		urlChange : function () {
 			/*	
@@ -146,7 +164,53 @@
 					$("#content").load("/nodes");
 				}
 			});
+		},
+		removeNodeElement : function(node_id, node_element_id )
+		{
+			console.log( node_element_id );
+			var node_element_name = $("#name-" + node_element_id).val();
+			var node_element_value = $("#value-" + node_element_id).val();
+			var data = {
+					   "node_id" : node_id,
+					   "node_element_id" : node_element_id,
+				       "node_element_name" : node_element_name,
+					   "node_element_value" : node_element_value
+				       };
+			var url = 'http://'+ window.location.host + '/removeNodeElement';
+			console.log(url);
+			$.ajax({
+				type: "POST",
+				url: url,
+				data: data ,
+				success: function(result){					
+					$("#content").load("/nodes");
+				}
+			});
+			
+		},
+		saveNodeElement : function ( node_id, node_element_id )
+		{
+			console.log( node_element_id );
+			var node_element_name = $("#name-" + node_element_id).val();
+			var node_element_value = $("#value-" + node_element_id).val();
+			var data = {
+					   "node_id" : node_id,
+					   "node_element_id" : node_element_id,
+				       "node_element_name" : node_element_name,
+					   "node_element_value" : node_element_value
+				       };
+			var url = 'http://'+ window.location.host + '/saveNodeElement';
+			console.log(url);
+			$.ajax({
+				type: "POST",
+				url: url,
+				data: data ,
+				success: function(result){					
+					$("#content").load("/nodes");
+				}
+			});
 		}
+		
 			
 }); //extend
 })(window.jQuery, window.main || (window.main = {}));
