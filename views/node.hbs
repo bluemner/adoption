@@ -3,7 +3,9 @@
 	<div class="panel panel-default panel-inverse node">
 		<div class="panel-heading">
 			<button type="button" class="btn-xs glyphicon glyphicon glyphicon-minus btn-primary collapse-button" data-toggle="collapse" data-target="#node-{{node_id}}"></button>
-			{{title}}
+			{{node_title}}
+			<button type="button" class="btn-xs glyphicon glyphicon glyphicon-floppy-disk btn-primary collapse-button" data-toggle="collapse" data-target="#node-{{node_id}}"></button>
+			
 		</div>
 		<div id="node-{{node_id}}" class="panel-body collapse in">
 			<!--   -->
@@ -51,11 +53,16 @@
 {{/nodes}}
 
 <div>
-	
-	<div class="col-sm-1">
-		<button id="add-node" type="button" class="btn btn-sm btn-success glyphicon glyphicon-plus-sign"> Add</button>
+	<div class="col-sm-4">
+		<div class="col-sm-10">
+			<label for="add-node-name" class="col-sm-2">Name:</label>
+			<input id="add-node-name" class="col-sm-10" type="text"></input>
+		</div>
+		<div class="col-sm-2">
+			
+			<button id="add-node" type="button" class="btn btn-sm btn-success glyphicon glyphicon-plus-sign"> Add</button>
+		</div>
 	</div>
-	
 	<div class="col-sm-1">
 		<button id="save-node" type="button" class="btn btn-sm btn-primary glyphicon glyphicon-floppy-disk"> Save</button>
 	</div>

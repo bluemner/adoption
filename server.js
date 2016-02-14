@@ -13,10 +13,13 @@ var io = require('socket.io')(http);
 var fs = require('fs');
 var handlebars = require('handlebars');
 var bodyParser = require('body-parser');
+// ================================================
+var _node = require('./model/node');
+var _nodeElements = require('./model/node_element');
 // =================================================
 
-var HTTPS_PORT = Number(4443);
-var HTTP_PORT =  Number( 8080);
+var HTTPS_PORT = Number( 4443 );
+var HTTP_PORT =  Number( 8080 );
 var SERVER_NAME = '';
 var SERVER_MESSAGE = '';
 var SERVER_CODE = 0;
@@ -176,11 +179,22 @@ app.get('/nodes', function(request, response){
       console.log("nodes:\n" +"\terror getting source\n\t"+ __dirname + '/views/_node.html');
       return;
     }
-  
-  var template = handlebars.compile(source);
-  var html = template(data);
-  //console.log(html);
-  response.send(html);
+    
+    var template = handlebars.compile(source);
+    _node.getNodes(function( error, result)
+    {
+    if( error )
+    {
+      console.log(error);
+    }
+    var nodes = {nodes: result};
+    
+    
+    var html = template(nodes);
+    //console.log(html);
+    response.send(html);
+    });
+ 
 });
 });
 
@@ -190,6 +204,7 @@ app.get('/nodes', function(request, response){
 app.post('/addNode', function(request, response){
   
   console.log('Add node');
+  /*
   data.nodes.push({        
       node_id :  ++dataCount,
       title : "Node " + ( ++dataCount ) ,
@@ -205,8 +220,18 @@ app.post('/addNode', function(request, response){
         node_element_value : 7,
       },]
     }
-  );  
-  response.send("ok");
+  ); */
+   var request_node =request.body;
+   //TODO - Implement null guard
+  _node.addNode(request_node, function(error,result){
+      if (error){
+        response.send("Error");
+        return;
+      }
+      
+      response.send("ok");
+  });
+  
 });
 
 // -------------------------------------------------
@@ -229,16 +254,28 @@ app.post('/addNodeElement', function(request, response){
               node_element_name : nodeElement.node_element_name,
               node_element_value : nodeElement.node_element_value
           });
-          
+     
+        
           response.send({
             "code":"0",
             "message": "success"
             });
+            _nodeElements.addNodeElement({
+                node_id: parseInt(nodeElement.node_id) ,
+                node_element_name : nodeElement.node_element_name,
+                node_element_value : parseFloat(nodeElement.node_element_value)
+          },function(error, result){
             
+          });
+    console.log({
+                node_id: parseInt(nodeElement.node_id) ,
+                node_element_name : nodeElement.node_element_name,
+                node_element_value : parseFloat(nodeElement.node_element_value)
+          });
           return;
      }
    }
-   
+     
    response.send({
     "code":"-1",
     "message":"failure"
@@ -350,6 +387,7 @@ app.post('/saveNodeElement', function(request, response){
 //  Save All Nodes
 // -------------------------------------------------
 app.post('/saveAllNodes', function(request, response){
+  
    console.log(request.params);   
    console.log( request.body );
    

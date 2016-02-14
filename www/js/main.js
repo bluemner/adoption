@@ -132,13 +132,14 @@
 		},
 		addNode : function()
 		{
+			var node_title = $('#add-node-name').val();
 			console.log("addNode");
 			var url = 'http://'+ window.location.host + '/addNode';
 			console.log(url);
 			$.ajax({
 				type: "POST",
 				url: url,
-				data: {'addnode':'node' } ,
+				data: {'node_title': node_title } ,
 				success: function(result){					
 					$("#content").load("/nodes");
 				}
